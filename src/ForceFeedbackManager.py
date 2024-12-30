@@ -19,7 +19,7 @@ class Lut:
         self.points.append((x, y))
 
     def __str__(self):
-        return "\n".join(f"{x:.3f}|{y:.4f}" for x, y in self.points)
+        return "\n".join(f"{x:.3f}|{y:.5f}" for x, y in self.points)
 
 def get_icon_path():
     ico_path = os.path.abspath('ico/FFM.ico')
@@ -40,7 +40,7 @@ def generateCustomLut(lutSize, deadZone, gain, power_boost):
         x = i
         y = x + (d * ((l - x) / l)) - (l - s) * (x / l) + (((((l / 2) - x) ** 2) / l) - (l / 4)) * ((g * 100) / l) * ((s / 100) - (d / 100))
         y = min(y, 100) # limit lut value
-        lut.addPoint(round((i * 1.0) / (l * 1.0), 3), round(y * 0.01, 4))
+        lut.addPoint(round((i * 1.0) / (l * 1.0), 3), round(y * 0.01, 5))
     return lut
 
 def get_padding_string(scaling_factor):
@@ -327,8 +327,8 @@ class ForceFeedbackManagerApp:
         # Generate the LUT
         lut = generateCustomLut(lut_size, deadzone, max_output, power_boost)
         self.lut_output.delete(1.0, tk.END)
-        # Insert "0.000|0.0000" as first row
-        self.lut_output.insert(tk.END, "0.000|0.0000\n")
+        # Insert "0.000|0.00000" as first row
+        self.lut_output.insert(tk.END, "0.000|0.00000\n")
 
         # Write the rest of the LUT
         lut_content = str(lut).split("\n")[1:]
@@ -344,7 +344,7 @@ class ForceFeedbackManagerApp:
                     xdata, ydata = line.get_data()
                     ind = line.contains(event)[1]["ind"][0]
                     x, y = xdata[ind], ydata[ind]
-                    self.tooltip.set_text(f"{x:.3f}|{y:.4f}")
+                    self.tooltip.set_text(f"{x:.3f}|{y:.3f}")
                     self.tooltip.xy = (event.xdata, event.ydata)
                     self.tooltip.set_visible(True)
                     self.canvas.draw_idle()
