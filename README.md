@@ -62,6 +62,6 @@ For Assetto Corsa, if you are using ***Content Manager*** as game launcher, you 
 
 ![1](images/cm-ffb-settings.png)
 ![2](images/cm-left-menu.png)
-![3]((images/cm-settings.png)
+![3](images/cm-settings.png)
 
 ---
