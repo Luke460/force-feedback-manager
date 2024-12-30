@@ -1,0 +1,15 @@
+# Ignore build and distribution directories
+build/
+dist/
+
+# Ignore Python bytecode files
+*.pyc
+__pycache__/
+
+# Ignore common system files
+.DS_Store
+Thumbs.db
+
+# Ignore spec file if generated
+ForceFeedbackManager.spec
+
