@@ -75,7 +75,7 @@ def limit_value(value, min, max):
 class ForceFeedbackManagerApp:
     def __init__(self, root):
         self.root = root
-        self.version = "v1.0"
+        self.version = "v1.0.1"
         self.title_string = "Force Feedback Manager - " + self.version
         self.root.title(self.title_string)
         print(self.title_string)
