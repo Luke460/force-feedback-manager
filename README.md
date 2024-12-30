@@ -18,7 +18,7 @@ Note: Exceeding 100% is not recommended as it will introduce clipping. Instead, 
 This setting is beneficial for less powerful steering wheels to enhance the detail of weaker forces (which contain the most important force feedback information), gradually and progressively sacrificing stronger forces (such as strong impacts, pronounced bumps, which increase immersion but do not contain significant information). Some steering wheels have this setting integrated.
 
 ## How To Use
-To run ***Force Feedback Manager***, download the [***latest version***](https://github.com/Luke460/force-feedback-manager /releases), unzip the file and run ***ForceFeedbackManager.exe***.
+To run ***Force Feedback Manager***, download the [***latest version***](https://github.com/Luke460/force-feedback-manager/releases), unzip the file and run ***ForceFeedbackManager.exe***.
 
 ### Important Note
 Sometimes, the *ForceFeedbackManager.exe* file may be flagged as a virus by some antivirus software. In such cases, you can:
