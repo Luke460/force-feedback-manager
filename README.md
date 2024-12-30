@@ -60,8 +60,8 @@ Now just place both the .lut file and the .ini file in the following folder:
 
 For Assetto Corsa, if you are using ***Content Manager*** as game launcher, you need to use its interface to set up your lut file as follows:
 
-![1](images/ac-settings.png)
-![2](images/left-menu.png)
-![3](images/ffb-settings.png)
+![1](images/cm-settings.png)
+![2](images/cm-left-menu.png)
+![3](images/cm-ffb-settings.png)
 
 ---
