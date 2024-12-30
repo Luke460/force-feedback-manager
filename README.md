@@ -1,7 +1,18 @@
+## Download
+
++ [***Force Feedback Manager***](https://github.com/Luke460/force-feedback-manager/releases) ***(latest version)***
+
+## Donate
+
+Donations are not required, but always accepted with pleasure. Thanks for your support!
+ - [***Go to the donation page***](https://www.paypal.com/donate?hosted_button_id=WVSY5VX8TA4ZE)
+
+---
+
 # Force Feedback Manager
 Force Feedback Manager is a streamlined version of Steering Wheel Master, designed to enhance and customize your driving simulation experience. For more advanced features like calibration, please refer to [***Steering Wheel Master***](https://github.com/Luke460/steering-wheel-master).
 
-
+![example](images/ffm-example-image.png)
 
 ## Features
 ### FFB Deadzone
