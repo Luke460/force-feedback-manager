@@ -7,6 +7,10 @@
 Donations are not required, but always accepted with pleasure. Thanks for your support!
  - [***Go to the donation page***](https://www.paypal.com/donate?hosted_button_id=WVSY5VX8TA4ZE)
 
+## Other Applications
+
+ - [***Steering Wheel Master:***](https://github.com/Luke460/steering-wheel-master) advanced force feedback tuning for every steering wheel.
+
 ---
 
 # Force Feedback Manager
