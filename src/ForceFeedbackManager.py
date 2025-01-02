@@ -1,27 +1,37 @@
+import ctypes
 import json
 import os
 import sys
-import importlib.resources as pkg_resources
 import tkinter as tk
-import ctypes
+
+from tkinter import filedialog
 from tkinter import ttk
+
 import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import numpy as np
 import ttkbootstrap as tb
-from tkinter import filedialog
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 
 class Lut:
+    """Define a LUT object (or lookup table)."""
+
     def __init__(self):
         self.points = []
 
     def addPoint(self, x, y):
+        """Add a point to the LUT."""
         self.points.append((x, y))
 
     def __str__(self):
+        """Get the icon path checking if it exists."""
         return "\n".join(f"{x:.3f}|{y:.5f}" for x, y in self.points)
 
+def open_link(link):
+        import webbrowser
+        webbrowser.open(link)
+
 def get_icon_path():
+    """Get the icon path checking if exists."""
     ico_path = os.path.abspath('ico/FFM.ico')
 
     if os.path.exists(ico_path):
@@ -31,6 +41,7 @@ def get_icon_path():
         return
 
 def generateCustomLut(lutSize, deadZone, gain, power_boost):
+    """Generate a custom LUT using the given parameters."""
     l = lutSize
     d = deadZone
     s = gain
@@ -38,12 +49,14 @@ def generateCustomLut(lutSize, deadZone, gain, power_boost):
     lut = Lut()
     for i in range(l + 1):
         x = i
+        # This was the hardest part of all the application by far. So many time to get to this formula.
         y = x + (d * ((l - x) / l)) - (l - s) * (x / l) + (((((l / 2) - x) ** 2) / l) - (l / 4)) * ((g * 100) / l) * ((s / 100) - (d / 100))
         y = min(y, 100) # limit lut value
         lut.addPoint(round((i * 1.0) / (l * 1.0), 3), round(y * 0.01, 5))
     return lut
 
 def get_padding_string(scaling_factor):
+    """Generate a padding string based on the Windows scaling factor."""
     if scaling_factor > 1.0:
         lateral_padding = 20
         top_padding = 0
@@ -66,6 +79,7 @@ def get_windows_scaling():
     return scaling_factor
 
 def limit_value(value, min, max):
+    """Force a value to be between min and max."""
     if value < min:
         return min
     elif value > max:
@@ -73,9 +87,11 @@ def limit_value(value, min, max):
     return value
 
 class ForceFeedbackManagerApp:
+
     def __init__(self, root):
+        """Initialize the application."""
         self.root = root
-        self.version = "v1.0.1"
+        self.version = "v1.0.2"
         self.title_string = "Force Feedback Manager - " + self.version
         self.root.title(self.title_string)
         print(self.title_string)
@@ -221,6 +237,7 @@ class ForceFeedbackManagerApp:
         popup.geometry(f"{popup_width}x{popup_height}+{x}+{y}")
 
     def show_help_popup(self):
+        """Show the help box."""
         help_popup = tk.Toplevel(self.root)
         help_popup.title("Help - Settings Descriptions")
         help_popup.iconbitmap(get_icon_path())
@@ -253,8 +270,15 @@ class ForceFeedbackManagerApp:
             description_label = ttk.Label(frame, text=description, wraplength=500, justify=tk.LEFT, font=('TkDefaultFont', 10))
             description_label.pack(anchor=tk.W, padx=30)
 
-        close_button = ttk.Button(help_popup, text="Close", command=help_popup.destroy)
-        close_button.pack(pady=(10,15))
+        button_frame = ttk.Frame(help_popup)
+        button_frame.pack(pady=(10, 20))
+
+        link = "https://github.com/Luke460/force-feedback-manager"
+        git_button = ttk.Button(button_frame, text="Visit Git Page", command=lambda: webbrowser.open(link))
+        git_button.pack(side=tk.LEFT, padx=5)
+
+        close_button = ttk.Button(button_frame, text="Close", command=help_popup.destroy)
+        close_button.pack(side=tk.LEFT, padx=5)
 
         self.center_popup(help_popup)
 
@@ -431,17 +455,14 @@ class ForceFeedbackManagerApp:
         button_frame = ttk.Frame(popup)
         button_frame.pack(pady=(0,20), padx=10)
 
-        donation_button = ttk.Button(button_frame, text="Visit Donation Page", command=self.open_donation_link)
+        link = "https://www.paypal.com/donate?hosted_button_id=WVSY5VX8TA4ZE";
+        donation_button = ttk.Button(button_frame, text="Visit Donation Page", command=lambda: open_link(link))
         donation_button.pack(side=tk.LEFT, padx=5)
 
         close_button = ttk.Button(button_frame, text="Close", command=popup.destroy)
         close_button.pack(side=tk.LEFT, padx=5)
 
         self.center_popup(popup)
-
-    def open_donation_link(self):
-        import webbrowser
-        webbrowser.open("https://www.paypal.com/donate?hosted_button_id=WVSY5VX8TA4ZE")
 
     def on_closing(self):
         """Handle the window closing event."""
