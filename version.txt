@@ -1,0 +1,36 @@
+# UTF-8
+#
+# For more details about fixed and string file info see:
+# http://msdn.microsoft.com/en-us/library/aa381058.aspx
+VSVersionInfo(
+  ffi=FixedFileInfo(
+    filevers=(1, 0, 2, 0),
+    prodvers=(1, 0, 2, 0),
+    mask=0x3f,
+    flags=0x0,
+    OS=0x4,
+    fileType=0x1,
+    subtype=0x0,
+    date=(0, 0)
+  ),
+  kids=[
+    StringFileInfo(
+      [
+      StringTable(
+        '040904B0', [
+        StringStruct('CompanyName', 'Independent Developer Luke460'),
+        StringStruct('FileDescription', 'Force Feedback Manager'),
+        StringStruct('FileVersion', '1.0.2'),
+        StringStruct('InternalName', 'ForceFeedbackManager'),
+        StringStruct('LegalCopyright', 'GPL 3.0 License, 2024, Luke460'),
+        StringStruct('OriginalFilename', 'ForceFeedbackManager.exe'),
+        StringStruct('ProductName', 'Force Feedback Manager'),
+        StringStruct('ProductVersion', '1.0.2'),
+        StringStruct('OriginalURL', 'https://github.com/Luke460/force-feedback-manager')
+      ])
+      ]
+    ),
+    VarFileInfo([VarStruct('Translation', [1033, 1200])])
+  ]
+)
+
