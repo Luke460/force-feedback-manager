@@ -86,14 +86,21 @@ def limit_value(value, min, max):
         return max
     return value
 
+
 class ForceFeedbackManagerApp:
 
     def __init__(self, root):
         """Initialize the application."""
         self.root = root
-        self.version = "v1.0.2"
+        self.version = "v1.1.0"
         self.title_string = "Force Feedback Manager - " + self.version
         self.root.title(self.title_string)
+        self.compare_lut = None
+        self.compare_lut_modified = False
+        self.loaded_preset_name = None
+        self.saved_lut_name = None
+        self.compare_lut_name = None
+
         print(self.title_string)
         
         # Create main frame
@@ -170,8 +177,16 @@ class ForceFeedbackManagerApp:
         donate_button = ttk.Button(final_button_frame, text="How To Donate", command=self.show_donation_popup)
         donate_button.pack(side=tk.LEFT, padx=5)
 
+        # Compare button
+        compare_button = ttk.Button(final_button_frame, text="Compare LUT", command=self.load_compare_lut)
+        compare_button.pack(side=tk.LEFT, padx=5)
+
+        # Clear Compare button
+        clear_compare_button = ttk.Button(final_button_frame, text="Clear Comparison", command=self.clear_comparison)
+        clear_compare_button.pack(side=tk.LEFT, padx=5)
+
         # Save button
-        self.save_button = ttk.Button(final_button_frame, text="Save .lut", command=self.save_lut)
+        self.save_button = ttk.Button(final_button_frame, text="Save LUT", command=self.save_lut)
         self.save_button.pack(side=tk.LEFT, padx=5)
 
         # Update window size
@@ -191,6 +206,42 @@ class ForceFeedbackManagerApp:
         print(f"Windows scaling factor: {scaling_factor * 100:.0f}%")
         print("Window resolution: " + str(mainframe_width) + " x " + str(mainframe_height))
 
+    def update_status_label(self):
+        """Update the status label with loaded preset, saved LUT, and compare LUT names."""
+        status_parts = []
+        if self.loaded_preset_name:
+            modified_text = " (modified)" if self.is_preset_modified() else ""
+            status_parts.append(f"Preset loaded: {self.loaded_preset_name}{modified_text}")
+        if self.saved_lut_name:
+            status_parts.append(f"LUT saved: {self.saved_lut_name}")
+        if self.compare_lut_name:
+            status_parts.append(f"Comparison LUT loaded: {self.compare_lut_name}")
+        status_text = " | ".join(status_parts) if status_parts else "Adjust FFB Deadzone, Max Output Force, and Power Boost, then click Apply."
+        self.status_label.config(text=status_text)
+
+    def load_compare_lut(self):
+        """Load and display a LUT file for comparison."""
+        file_path = filedialog.askopenfilename(defaultextension=".lut", filetypes=[("LUT files", "*.lut"), ("All files", "*.*")])
+        if file_path:
+            self.compare_lut = Lut()
+            with open(file_path, "r") as file:
+                for line in file:
+                    x, y = map(float, line.strip().split("|"))
+                    self.compare_lut.addPoint(x, y)
+            self.compare_lut_name = os.path.basename(file_path)
+            self.compare_lut_modified = True
+            self.update_status_label()
+            self.update_chart(compare_lut=self.compare_lut)
+
+
+    def clear_comparison(self):
+        """Clear the comparison LUT curve."""
+        self.compare_lut = None
+        self.compare_lut_name = None
+        self.update_chart()
+        self.compare_lut_modified = False
+        self.update_status_label()
+
     def save_preset(self):
         """Save the current slider values to a preset file."""
         preset = {
@@ -206,7 +257,8 @@ class ForceFeedbackManagerApp:
         if file_path:
             with open(file_path, "w") as file:
                 json.dump(preset, file)
-            self.status_label.config(text=f"Preset saved to {file_path}")
+            self.saved_lut_name = os.path.basename(file_path)
+            self.update_status_label()
 
     def load_preset(self):
         """Load slider values from a preset file."""
@@ -217,8 +269,13 @@ class ForceFeedbackManagerApp:
                 self.deadzone_value.set(preset["deadzone"])
                 self.max_output_value.set(preset["max_output"])
                 self.power_boost_value.set(preset["power_boost"])
+                # Save initial values
+                self.initial_deadzone_value = preset["deadzone"]
+                self.initial_max_output_value = preset["max_output"]
+                self.initial_power_boost_value = preset["power_boost"]
+            self.loaded_preset_name = os.path.basename(file_path)
+            self.update_status_label()
             self.apply_correction()
-            self.status_label.config(text=f"Preset loaded from {file_path}")
 
     def center_popup(self, popup):
         """Center the given popup window on the root window."""
@@ -357,7 +414,6 @@ class ForceFeedbackManagerApp:
         # Write the rest of the LUT
         lut_content = str(lut).split("\n")[1:]
         self.lut_output.insert(tk.END, "\n".join(lut_content))
-        self.status_label.config(text=f"FFB Deadzone set to {self.deadzone_value.get():.1f}%, Max Output Force set to {self.max_output_value.get():.1f}%, Power Boost set to {self.power_boost_value.get():.1f}")
         self.update_chart()
 
     def create_tooltip(self, event):
@@ -376,8 +432,8 @@ class ForceFeedbackManagerApp:
         self.tooltip.set_visible(False)
         self.canvas.draw_idle()
         
-    def update_chart(self):
-        """Update the chart with the current settings."""
+    def update_chart(self, compare_lut=None):
+        """Update the chart with the current settings, optionally comparing with another LUT."""
         self.ax.clear()
         lut_size = 100
         deadzone = self.deadzone_value.get()
@@ -388,10 +444,16 @@ class ForceFeedbackManagerApp:
         x_vals = [x for x, y in lut.points]
         y_vals = [y for x, y in lut.points]
         
-        line, = self.ax.plot(x_vals, y_vals, label='LUT Curve', color='blue', linewidth=2)
+        self.ax.plot(x_vals, y_vals, label='Current LUT Curve', color='blue', linewidth=2)
         
         # Find the intersection point of the LUT curve with the y-axis
         intersection_y = next((y for x, y in lut.points if x == 0), 0)
+
+        # Ensure the comparison LUT is always plotted if it exists
+        if self.compare_lut_modified and hasattr(self, 'compare_lut') and self.compare_lut:
+            compare_x_vals = [x for x, y in self.compare_lut.points]
+            compare_y_vals = [y for x, y in self.compare_lut.points]
+            self.ax.plot(compare_x_vals, compare_y_vals, label='Comparison LUT Curve', color='orange', linewidth=2)
         
         # Add horizontal line for deadzone
         if deadzone > 0.0:
@@ -408,7 +470,7 @@ class ForceFeedbackManagerApp:
         if max_output > 100.0:
             clipping_point = next((x for x, y in lut.points if y >= 1.0), 1.0)
             self.ax.axvline(clipping_point, color='red', linestyle='--', label='Clipping')
-        
+
         self.ax.set_ylim(0, 1)
         self.ax.set_xlim(0, 1)
         self.ax.set_xlabel('Input (%)')
@@ -429,6 +491,8 @@ class ForceFeedbackManagerApp:
         
         self.canvas.mpl_connect("motion_notify_event", self.create_tooltip)
         self.canvas.draw()
+
+        self.update_status_label()
         
     def save_lut(self):
         """Save the LUT to a file."""
@@ -441,8 +505,30 @@ class ForceFeedbackManagerApp:
         if file_path:
             with open(file_path, "w") as file:
                 file.write(lut_content)
-            self.status_label.config(text=f"LUT saved to {file_path}")
+            self.saved_lut_name = os.path.basename(file_path)
+            self.update_status_label()
             self.show_donation_popup()
+
+    def load_compare_lut(self):
+        """Load and display a LUT file for comparison."""
+        file_path = filedialog.askopenfilename(defaultextension=".lut", filetypes=[("LUT files", "*.lut"), ("All files", "*.*")])
+        if file_path:
+            self.compare_lut = Lut()
+            with open(file_path, "r") as file:
+                for line in file:
+                    x, y = map(float, line.strip().split("|"))
+                    self.compare_lut.addPoint(x, y)
+            self.compare_lut_name = os.path.basename(file_path)
+            self.compare_lut_modified = True
+            self.update_status_label()
+            self.update_chart(compare_lut=self.compare_lut)
+
+    def is_preset_modified(self):
+        """Check if the current preset values have been modified."""
+        return (self.loaded_preset_name and (
+            self.deadzone_value.get() != self.initial_deadzone_value or
+            self.max_output_value.get() != self.initial_max_output_value or
+            self.power_boost_value.get() != self.initial_power_boost_value))
 
     def show_donation_popup(self):
         popup = tk.Toplevel(self.root)
