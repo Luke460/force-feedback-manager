@@ -44,7 +44,7 @@ Sometimes, the *ForceFeedbackManager.exe* file may be flagged as a virus by some
    - clone the repository
    - from *force-feedback-manager* folder run: 
 
-     ``` pyinstaller --clean --onefile --windowed --icon=ico/FFM.ico --version-file=version.txt src\ForceFeedbackManager.py ```
+     ``` pyinstaller --clean --onefile --windowed --version-file=version.txt src\ForceFeedbackManager.py ```
 
  - Directly run the Python code from the command line, ensuring you have installed Python and the necessary libraries (as indicated by the imports at the top of the file). So, from *force-feedback-manager* folder run: 
 
