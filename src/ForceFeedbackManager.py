@@ -2,6 +2,7 @@ import ctypes
 import json
 import os
 import sys
+import webbrowser
 import tkinter as tk
 
 from tkinter import filedialog
@@ -55,19 +56,6 @@ def generateCustomLut(lutSize, deadZone, gain, power_boost):
         lut.addPoint(round((i * 1.0) / (l * 1.0), 3), round(y * 0.01, 5))
     return lut
 
-def get_padding_string(scaling_factor):
-    """Generate a padding string based on the Windows scaling factor."""
-    if scaling_factor > 1.0:
-        lateral_padding = 20
-        top_padding = 0
-        bottom_padding = 0
-    else:
-        lateral_padding = 30
-        top_padding = 30
-        bottom_padding = 10
-    padding_string = str(lateral_padding) + " " + str(top_padding) + " " + str(lateral_padding) + " " + str(bottom_padding)
-    return padding_string
-
 def get_windows_scaling():
     """Get the current Windows scaling factor."""
     # Get the handle to the desktop window
@@ -92,7 +80,7 @@ class ForceFeedbackManagerApp:
     def __init__(self, root):
         """Initialize the application."""
         self.root = root
-        self.version = "v1.1.0"
+        self.version = "v1.1.1"
         self.title_string = "Force Feedback Manager - " + self.version
         self.root.title(self.title_string)
         self.compare_lut = None
@@ -104,12 +92,25 @@ class ForceFeedbackManagerApp:
         print(self.title_string)
         
         # Create main frame
-        scaling_factor = get_windows_scaling()
-        padding_string = get_padding_string(scaling_factor)
-        print("window padding: " + padding_string)
+        lateral_padding = 30
+        top_padding = 30
+        bottom_padding = 10
+        padding_string = str(lateral_padding) + " " + str(top_padding) + " " + str(lateral_padding) + " " + str(bottom_padding)
         mainframe = ttk.Frame(root, padding=padding_string)
         mainframe.place(relx=0.5, rely=0.5, anchor=tk.CENTER)
-        
+
+        row = 0
+
+        # Main label
+        self.main_title_label = ttk.Label(mainframe, text="Force Feedback Manager", font=('Helvetica', 20, 'bold italic'))
+        self.main_title_label.grid(row=row, column=0, columnspan=3, pady=5)
+        row += 1
+
+        # Secondary label
+        self.secondary_title_label = ttk.Label(mainframe, text="Customize your driving simulation experience", font=('Helvetica', 12, 'italic'))
+        self.secondary_title_label.grid(row=row, column=0, columnspan=3, pady=15)
+        row += 1
+
         # Initialize variables for sliders
         self.deadzone_value = tk.DoubleVar()
         self.max_output_value = tk.DoubleVar(value=100.0)
@@ -124,11 +125,13 @@ class ForceFeedbackManagerApp:
         self.power_boost_max = 10.0
         
         # Create sliders for FFB Deadzone, Max Output Force, and Power Boost
-        self.create_slider_grid(mainframe)
+        self.create_slider_grid(mainframe, starting_row=row)
+        row += 4  # Adjust based on the number of rows used in create_slider_grid
 
         # Frame to hold the buttons
         button_frame = ttk.Frame(mainframe)
-        button_frame.grid(row=6, column=0, columnspan=3, pady=20)
+        button_frame.grid(row=row, column=0, columnspan=3, pady=20)
+        row += 1
 
         # Apply button
         self.apply_button = ttk.Button(button_frame, text="Apply", command=self.apply_correction)
@@ -148,11 +151,13 @@ class ForceFeedbackManagerApp:
 
         # Status label
         self.status_label = ttk.Label(mainframe, text="Adjust FFB Deadzone, Max Output Force, and Power Boost, then click Apply.")
-        self.status_label.grid(row=7, column=0, columnspan=3, sticky=tk.W)
+        self.status_label.grid(row=row, column=0, columnspan=3, sticky=tk.W)
+        row += 1
         
         # Create a frame to hold the chart and LUT output side by side
         chart_lut_frame = ttk.Frame(mainframe)
-        chart_lut_frame.grid(row=8, column=0, columnspan=3, sticky=(tk.W, tk.E))
+        chart_lut_frame.grid(row=row, column=0, columnspan=3, sticky=(tk.W, tk.E))
+        row += 1
         
         # Create chart for visual representation
         self.figure, self.ax = plt.subplots(figsize=(6, 4))
@@ -171,7 +176,7 @@ class ForceFeedbackManagerApp:
         
         # Frame to hold the buttons
         final_button_frame = ttk.Frame(mainframe)
-        final_button_frame.grid(row=9, column=0, columnspan=3, pady=20)
+        final_button_frame.grid(row=row, column=0, columnspan=3, pady=20)
 
         # Donate button
         donate_button = ttk.Button(final_button_frame, text="How To Donate", command=self.show_donation_popup)
@@ -195,8 +200,11 @@ class ForceFeedbackManagerApp:
         mainframe_width = mainframe.winfo_width()
         mainframe_height = mainframe.winfo_height()
 
-        # Adjust geometry based on the Windows scaling factor
-        self.root.geometry(f"{int(mainframe_width * scaling_factor)}x{int(mainframe_height * scaling_factor)}")
+        # Apply the adjusted scaling factors
+        scaling_factor = get_windows_scaling()
+        adjusted_width = int(mainframe_width * (scaling_factor - (scaling_factor - 1.0) * 0.25))
+        adjusted_height = int(mainframe_height * (scaling_factor - (scaling_factor - 1.0) * 0.5))
+        self.root.geometry(f"{adjusted_width}x{adjusted_height}")
 
         # Set the icon for the main window - this after the resize
         
@@ -205,6 +213,17 @@ class ForceFeedbackManagerApp:
         # Some logs
         print(f"Windows scaling factor: {scaling_factor * 100:.0f}%")
         print("Window resolution: " + str(mainframe_width) + " x " + str(mainframe_height))
+
+    def create_slider_grid(self, mainframe, starting_row):
+        slider_frame = ttk.Frame(mainframe)
+        slider_frame.grid(row=starting_row, column=0, columnspan=3, pady=10)
+        
+        for col in range(4):
+            slider_frame.columnconfigure(col, weight=1)
+
+        self.create_slider(slider_frame, "FFB Deadzone:", self.deadzone_value, 0, 0, from_=self.deadzone_min, to=self.deadzone_max)
+        self.create_slider(slider_frame, "Max Output Force:", self.max_output_value, 1, 0, from_=self.max_output_min, to=self.max_output_max)
+        self.create_slider(slider_frame, "Power Boost:", self.power_boost_value, 2, 0, from_=self.power_boost_min, to=self.power_boost_max)
 
     def update_status_label(self):
         """Update the status label with loaded preset, saved LUT, and compare LUT names."""
@@ -232,7 +251,6 @@ class ForceFeedbackManagerApp:
             self.compare_lut_modified = True
             self.update_status_label()
             self.update_chart(compare_lut=self.compare_lut)
-
 
     def clear_comparison(self):
         """Clear the comparison LUT curve."""
@@ -338,17 +356,6 @@ class ForceFeedbackManagerApp:
         close_button.pack(side=tk.LEFT, padx=5)
 
         self.center_popup(help_popup)
-
-    def create_slider_grid(self, mainframe):
-        slider_frame = ttk.Frame(mainframe)
-        slider_frame.grid(row=0, column=0, sticky=(tk.E), padx=40, pady=10)
-        
-        for col in range(4):
-            slider_frame.columnconfigure(col, weight=1)
-
-        self.create_slider(slider_frame, "FFB Deadzone:", self.deadzone_value, 0, 0, from_=self.deadzone_min, to=self.deadzone_max)
-        self.create_slider(slider_frame, "Max Output Force:", self.max_output_value, 1, 0, from_=self.max_output_min, to=self.max_output_max)
-        self.create_slider(slider_frame, "Power Boost:", self.power_boost_value, 2, 0, from_=self.power_boost_min, to=self.power_boost_max)
 
     def create_slider(self, frame, text, variable, row, col, from_=0.0, to=100.0, increment=0.5):
         label = ttk.Label(frame, text=text)

@@ -4,8 +4,8 @@
 # http://msdn.microsoft.com/en-us/library/aa381058.aspx
 VSVersionInfo(
   ffi=FixedFileInfo(
-    filevers=(1, 1, 0, 0),
-    prodvers=(1, 1, 0, 0),
+    filevers=(1, 1, 1, 0),
+    prodvers=(1, 1, 1, 0),
     mask=0x3f,
     flags=0x0,
     OS=0x4,
@@ -20,12 +20,12 @@ VSVersionInfo(
         '040904B0', [
         StringStruct('CompanyName', 'Independent Developer Luke460'),
         StringStruct('FileDescription', 'Force Feedback Manager'),
-        StringStruct('FileVersion', '1.1.0'),
+        StringStruct('FileVersion', '1.1.1'),
         StringStruct('InternalName', 'ForceFeedbackManager'),
         StringStruct('LegalCopyright', 'GPL 3.0 License, 2024, Luke460'),
         StringStruct('OriginalFilename', 'ForceFeedbackManager.exe'),
         StringStruct('ProductName', 'Force Feedback Manager'),
-        StringStruct('ProductVersion', '1.1.0'),
+        StringStruct('ProductVersion', '1.1.1'),
         StringStruct('OriginalURL', 'https://github.com/Luke460/force-feedback-manager')
       ])
       ]
