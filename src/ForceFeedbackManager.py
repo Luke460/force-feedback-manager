@@ -80,7 +80,7 @@ class ForceFeedbackManagerApp:
     def __init__(self, root):
         """Initialize the application."""
         self.root = root
-        self.version = "v1.1.1"
+        self.version = "v1.1.2"
         self.title_string = "Force Feedback Manager - " + self.version
         self.root.title(self.title_string)
         self.compare_lut = None
@@ -338,19 +338,28 @@ class ForceFeedbackManagerApp:
         for setting, description in descriptions.items():
             frame = ttk.Frame(help_popup)
             frame.pack(fill=tk.X, pady=10)
-            # Use a bold font for the setting name and increase font size
             setting_label = ttk.Label(frame, text=f"{setting}:", font=('TkDefaultFont', 10, 'bold'))
             setting_label.pack(anchor=tk.W, padx=20, pady=5)
-            # Increase font size for the description
-            description_label = ttk.Label(frame, text=description, wraplength=500, justify=tk.LEFT, font=('TkDefaultFont', 10))
+            description_label = ttk.Label(frame, text=description, wraplength=600, justify=tk.LEFT, font=('TkDefaultFont', 10))
             description_label.pack(anchor=tk.W, padx=30)
 
-        button_frame = ttk.Frame(help_popup)
-        button_frame.pack(pady=(10, 20))
+        label = ttk.Label(frame, text="Current app version: " + self.version)
+        label.pack(side=tk.LEFT, padx=20, pady=20)
 
-        link = "https://github.com/Luke460/force-feedback-manager"
-        git_button = ttk.Button(button_frame, text="Visit Git Page", command=lambda: webbrowser.open(link))
+        button_frame = ttk.Frame(help_popup)
+        button_frame.pack(pady=(0, 30))
+
+        git_link = "https://github.com/Luke460/force-feedback-manager"
+        git_button = ttk.Button(button_frame, text="Visit GitHub Page", command=lambda: webbrowser.open(git_link))
         git_button.pack(side=tk.LEFT, padx=5)
+
+        ufb_link = "https://github.com/Luke460/force-feedback-manager/issues/1"
+        ufb_button = ttk.Button(button_frame, text="User Feedback", command=lambda: webbrowser.open(ufb_link))
+        ufb_button.pack(side=tk.LEFT, padx=5)
+
+        rel_link = "https://github.com/Luke460/force-feedback-manager/releases"
+        releases_button = ttk.Button(button_frame, text="Check Updates", command=lambda: webbrowser.open(rel_link))
+        releases_button.pack(side=tk.LEFT, padx=5)
 
         close_button = ttk.Button(button_frame, text="Close", command=help_popup.destroy)
         close_button.pack(side=tk.LEFT, padx=5)
