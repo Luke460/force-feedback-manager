@@ -11,7 +11,9 @@ from tkinter import ttk
 import matplotlib.pyplot as plt
 import numpy as np
 import ttkbootstrap as tb
+from ttkbootstrap import Style
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from PIL import Image, ImageTk
 
 class Lut:
     """Define a LUT object (or lookup table)."""
@@ -80,7 +82,7 @@ class ForceFeedbackManagerApp:
     def __init__(self, root):
         """Initialize the application."""
         self.root = root
-        self.version = "v1.1.2"
+        self.version = "v1.1.3"
         self.title_string = "Force Feedback Manager - " + self.version
         self.root.title(self.title_string)
         self.compare_lut = None
@@ -90,6 +92,8 @@ class ForceFeedbackManagerApp:
         self.compare_lut_name = None
 
         print(self.title_string)
+
+        self.load_donation_image()
         
         # Create main frame
         lateral_padding = 30
@@ -104,6 +108,8 @@ class ForceFeedbackManagerApp:
         # Main label
         self.main_title_label = ttk.Label(mainframe, text="Force Feedback Manager", font=('Helvetica', 20, 'bold italic'))
         self.main_title_label.grid(row=row, column=0, columnspan=3, pady=5)
+        donate_button = self.create_donation_button(mainframe, self.show_donation_popup)
+        donate_button.grid(row=row, column=2, sticky=tk.E, padx=5)
         row += 1
 
         # Secondary label
@@ -178,10 +184,6 @@ class ForceFeedbackManagerApp:
         final_button_frame = ttk.Frame(mainframe)
         final_button_frame.grid(row=row, column=0, columnspan=3, pady=20)
 
-        # Donate button
-        donate_button = ttk.Button(final_button_frame, text="How To Donate", command=self.show_donation_popup)
-        donate_button.pack(side=tk.LEFT, padx=5)
-
         # Compare button
         compare_button = ttk.Button(final_button_frame, text="Compare LUT", command=self.load_compare_lut)
         compare_button.pack(side=tk.LEFT, padx=5)
@@ -213,6 +215,34 @@ class ForceFeedbackManagerApp:
         # Some logs
         print(f"Windows scaling factor: {scaling_factor * 100:.0f}%")
         print("Window resolution: " + str(mainframe_width) + " x " + str(mainframe_height))
+
+    def create_donation_button(self, mainframe, command):
+        """Create a frame for the donation button in the top right corner."""
+        if self.paypal_image:
+            style = Style(theme='superhero')
+            background_color = style.colors.get('bg')
+            style.configure('Transparent.TButton', background=background_color, borderwidth=0, highlightthickness=0, relief='flat', focuscolor='none')
+            donate_button = ttk.Button(mainframe, image=self.paypal_image, command=command, style='Transparent.TButton')
+        else:
+            donate_button = ttk.Button(mainframe, text="Donate <3", command=self.show_donation_popup)
+        return donate_button
+
+    def load_donation_image(self):
+        """Load donation button image."""
+        try:
+            user32 = ctypes.windll.user32
+            user32.SetProcessDPIAware()
+            scaling_factor = get_windows_scaling()
+
+            new_width = int(100 * scaling_factor)
+            new_height = int(30 * scaling_factor)
+
+            original_image = Image.open('ico/donate.png')
+            resized_image = original_image.resize((new_width, new_height), Image.LANCZOS)
+            self.paypal_image = ImageTk.PhotoImage(resized_image)
+        except FileNotFoundError:
+            print("Warning: donate.png not found. Using default text button.")
+            self.paypal_image = None
 
     def create_slider_grid(self, mainframe, starting_row):
         slider_frame = ttk.Frame(mainframe)
@@ -360,9 +390,6 @@ class ForceFeedbackManagerApp:
         rel_link = "https://github.com/Luke460/force-feedback-manager/releases"
         releases_button = ttk.Button(button_frame, text="Check Updates", command=lambda: webbrowser.open(rel_link))
         releases_button.pack(side=tk.LEFT, padx=5)
-
-        close_button = ttk.Button(button_frame, text="Close", command=help_popup.destroy)
-        close_button.pack(side=tk.LEFT, padx=5)
 
         self.center_popup(help_popup)
 
@@ -558,11 +585,8 @@ class ForceFeedbackManagerApp:
         button_frame.pack(pady=(0,20), padx=10)
 
         link = "https://www.paypal.com/donate?hosted_button_id=WVSY5VX8TA4ZE";
-        donation_button = ttk.Button(button_frame, text="Visit Donation Page", command=lambda: open_link(link))
-        donation_button.pack(side=tk.LEFT, padx=5)
-
-        close_button = ttk.Button(button_frame, text="Close", command=popup.destroy)
-        close_button.pack(side=tk.LEFT, padx=5)
+        donate_button = self.create_donation_button(mainframe=button_frame, command=lambda: open_link(link))
+        donate_button.pack(side=tk.LEFT, padx=5)
 
         self.center_popup(popup)
 
