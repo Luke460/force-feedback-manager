@@ -82,7 +82,7 @@ class ForceFeedbackManagerApp:
     def __init__(self, root):
         """Initialize the application."""
         self.root = root
-        self.version = "v1.1.3"
+        self.version = "v1.1.4"
         self.title_string = "Force Feedback Manager - " + self.version
         self.root.title(self.title_string)
         self.compare_lut = None
@@ -170,16 +170,16 @@ class ForceFeedbackManagerApp:
         self.canvas = FigureCanvasTkAgg(self.figure, master=chart_lut_frame)
         self.canvas.get_tk_widget().pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
         self.update_chart()
-        
-        # Text output for LUT with scrollbar
+
+        # Text output for LUT with comparison option and related scrollbar
         self.lut_frame = ttk.Frame(chart_lut_frame)
         self.lut_frame.pack(side=tk.RIGHT, fill=tk.BOTH, expand=True)
-        self.lut_output = tk.Text(self.lut_frame, height=10, width=22)
-        self.lut_output.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
-        self.scrollbar = ttk.Scrollbar(self.lut_frame, orient=tk.VERTICAL, command=self.lut_output.yview)
+        self.combined_output = tk.Text(self.lut_frame, height=10, width=20, state=tk.DISABLED)
+        self.combined_output.pack(side=tk.LEFT, fill=tk.BOTH, expand=True)
+        self.scrollbar = ttk.Scrollbar(self.lut_frame, orient=tk.VERTICAL, command=self.combined_output.yview)
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
-        self.lut_output.config(yscrollcommand=self.scrollbar.set)
-        
+        self.combined_output.config(yscrollcommand=self.scrollbar.set)
+
         # Frame to hold the buttons
         final_button_frame = ttk.Frame(mainframe)
         final_button_frame.grid(row=row, column=0, columnspan=3, pady=20)
@@ -280,15 +280,49 @@ class ForceFeedbackManagerApp:
             self.compare_lut_name = os.path.basename(file_path)
             self.compare_lut_modified = True
             self.update_status_label()
-            self.update_chart(compare_lut=self.compare_lut)
+            self.update_combined_output()
+            self.update_chart()
 
     def clear_comparison(self):
         """Clear the comparison LUT curve."""
         self.compare_lut = None
         self.compare_lut_name = None
-        self.update_chart()
         self.compare_lut_modified = False
         self.update_status_label()
+        self.update_combined_output()
+        self.update_chart()
+
+    def update_combined_output(self):
+        """Update the combined LUT output with both current and comparison LUTs."""
+        self.combined_output.config(state=tk.NORMAL)
+        self.combined_output.delete(1.0, tk.END)
+
+        lut_points = {x: y for x, y in self.lut.points}
+        compare_points = {x: y for x, y in self.compare_lut.points} if self.compare_lut else None
+
+        combined_content = []
+        first_compare_y = 0.0
+
+        if compare_points:
+            first_compare_y = compare_points.get(0.0, 0.0)
+            combined_content.append(f"0.000|0.00000 - {first_compare_y:.5f}")
+        else:
+            combined_content.append("0.000|0.00000")
+        
+        previous_compare_y = first_compare_y
+        for x in sorted(lut_points.keys()):
+            if x == 0.000:
+                continue  # Skip the first value
+            current_y = lut_points[x]
+            if compare_points:
+                compare_y = compare_points.get(x, previous_compare_y)
+                previous_compare_y = compare_y
+                combined_content.append(f"{x:.3f}|{current_y:.5f} - {compare_y:.5f}")
+            else:
+                combined_content.append(f"{x:.3f}|{current_y:.5f}")
+        
+        self.combined_output.insert(tk.END, "\n".join(combined_content))
+        self.combined_output.config(state=tk.DISABLED)
 
     def save_preset(self):
         """Save the current slider values to a preset file."""
@@ -436,27 +470,17 @@ class ForceFeedbackManagerApp:
         variable.set(rounded_value)
         self.update_chart()
 
-    def apply_correction(self, event=None):  # Add event=None to allow calling without event
+    def apply_correction(self, event=None):
         """Apply the deadzone and max output values to generate the LUT."""
         lut_size = 1000
-        # Values check
         self.deadzone_value.set(limit_value(self.deadzone_value.get(), self.deadzone_min, self.deadzone_max))
         self.max_output_value.set(limit_value(self.max_output_value.get(), self.max_output_min, self.max_output_max))
         self.power_boost_value.set(limit_value(self.power_boost_value.get(), self.power_boost_min, self.power_boost_max))
-        # Get values
         deadzone = self.deadzone_value.get()
         max_output = self.max_output_value.get()
         power_boost = self.power_boost_value.get()
-
-        # Generate the LUT
-        lut = generateCustomLut(lut_size, deadzone, max_output, power_boost)
-        self.lut_output.delete(1.0, tk.END)
-        # Insert "0.000|0.00000" as first row
-        self.lut_output.insert(tk.END, "0.000|0.00000\n")
-
-        # Write the rest of the LUT
-        lut_content = str(lut).split("\n")[1:]
-        self.lut_output.insert(tk.END, "\n".join(lut_content))
+        self.lut = generateCustomLut(lut_size, deadzone, max_output, power_boost)
+        self.update_combined_output()
         self.update_chart()
 
     def create_tooltip(self, event):
@@ -487,7 +511,7 @@ class ForceFeedbackManagerApp:
         x_vals = [x for x, y in lut.points]
         y_vals = [y for x, y in lut.points]
         
-        self.ax.plot(x_vals, y_vals, label='Current LUT Curve', color='blue', linewidth=2)
+        self.ax.plot(x_vals, y_vals, label='Current LUT', color='blue', linewidth=2)
         
         # Find the intersection point of the LUT curve with the y-axis
         intersection_y = next((y for x, y in lut.points if x == 0), 0)
@@ -496,7 +520,7 @@ class ForceFeedbackManagerApp:
         if self.compare_lut_modified and hasattr(self, 'compare_lut') and self.compare_lut:
             compare_x_vals = [x for x, y in self.compare_lut.points]
             compare_y_vals = [y for x, y in self.compare_lut.points]
-            self.ax.plot(compare_x_vals, compare_y_vals, label='Comparison LUT Curve', color='orange', linewidth=2)
+            self.ax.plot(compare_x_vals, compare_y_vals, label='Comparison LUT', color='orange', linewidth=2)
         
         # Add horizontal line for deadzone
         if deadzone > 0.0:
@@ -539,15 +563,15 @@ class ForceFeedbackManagerApp:
         
     def save_lut(self):
         """Save the LUT to a file."""
-        # Apply the current settings before saving
         self.apply_correction()
         
-        # Ensure the first line is always "0.000, 0.0000"
-        lut_content = self.lut_output.get(1.0, tk.END)
+        lut_content = ["0.000|0.00000"]  # First value
+        lut_content += [f"{x:.3f}|{y:.5f}" for x, y in self.lut.points if x != 0.000]
+
         file_path = filedialog.asksaveasfilename(defaultextension=".lut", filetypes=[("LUT files", "*.lut"), ("All files", "*.*")])
         if file_path:
             with open(file_path, "w") as file:
-                file.write(lut_content)
+                file.write("\n".join(lut_content))
             self.saved_lut_name = os.path.basename(file_path)
             self.update_status_label()
             self.show_donation_popup()
@@ -564,7 +588,8 @@ class ForceFeedbackManagerApp:
             self.compare_lut_name = os.path.basename(file_path)
             self.compare_lut_modified = True
             self.update_status_label()
-            self.update_chart(compare_lut=self.compare_lut)
+            self.update_combined_output()
+            self.update_chart()
 
     def is_preset_modified(self):
         """Check if the current preset values have been modified."""
