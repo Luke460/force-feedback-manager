@@ -82,7 +82,7 @@ class ForceFeedbackManagerApp:
     def __init__(self, root):
         """Initialize the application."""
         self.root = root
-        self.version = "v1.1.4"
+        self.version = "v1.1.5"
         self.title_string = "Force Feedback Manager - " + self.version
         self.root.title(self.title_string)
         self.compare_lut = None
@@ -279,18 +279,14 @@ class ForceFeedbackManagerApp:
                     self.compare_lut.addPoint(x, y)
             self.compare_lut_name = os.path.basename(file_path)
             self.compare_lut_modified = True
-            self.update_status_label()
-            self.update_combined_output()
-            self.update_chart()
+            self.apply_correction()
 
     def clear_comparison(self):
         """Clear the comparison LUT curve."""
         self.compare_lut = None
         self.compare_lut_name = None
         self.compare_lut_modified = False
-        self.update_status_label()
-        self.update_combined_output()
-        self.update_chart()
+        self.apply_correction()
 
     def update_combined_output(self):
         """Update the combined LUT output with both current and comparison LUTs."""
@@ -356,7 +352,6 @@ class ForceFeedbackManagerApp:
                 self.initial_max_output_value = preset["max_output"]
                 self.initial_power_boost_value = preset["power_boost"]
             self.loaded_preset_name = os.path.basename(file_path)
-            self.update_status_label()
             self.apply_correction()
 
     def center_popup(self, popup):
@@ -587,9 +582,7 @@ class ForceFeedbackManagerApp:
                     self.compare_lut.addPoint(x, y)
             self.compare_lut_name = os.path.basename(file_path)
             self.compare_lut_modified = True
-            self.update_status_label()
-            self.update_combined_output()
-            self.update_chart()
+            self.apply_correction()
 
     def is_preset_modified(self):
         """Check if the current preset values have been modified."""
