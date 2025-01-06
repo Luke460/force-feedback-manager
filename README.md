@@ -15,7 +15,9 @@ Donations are not required, but always accepted with pleasure. Thanks for your s
 ---
 
 # Force Feedback Manager
-Force Feedback Manager is a streamlined version of Steering Wheel Master, designed to enhance and customize your driving simulation experience. For more advanced features like calibration, please refer to [***Steering Wheel Master***](https://github.com/Luke460/steering-wheel-master).
+***Force Feedback Manager*** is designed to enhance and customize your driving simulation experience by optimizing force feedback settings, compensating for deadzones, and improving steering wheel performance. It offers an intuitive interface and essential features for driving enthusiasts. 
+
+The development was born to help the simracers community get the most out of their steering wheels, regardless of the price range of the hardware. While [***Steering Wheel Master***](https://github.com/Luke460/steering-wheel-master) (my previous application) was created with the same goal in mind, ***Force Feedback Manager*** aims to make the process even more straightforward and user-friendly. For more advanced features like calibration, please refer to ***Steering Wheel Master***.
 
 ![example](images/ffm-example-image.png)
 
@@ -34,7 +36,30 @@ Note: Exceeding 100% is not recommended as it will introduce clipping. Instead, 
 This setting is beneficial for less powerful steering wheels to enhance the detail of weaker forces (which contain the most important force feedback information), gradually and progressively sacrificing stronger forces (such as strong impacts, pronounced bumps, which increase immersion but do not contain significant information). Some steering wheels have this setting integrated.
 
 ## How To Use
-To run ***Force Feedback Manager***, download the [***latest version***](https://github.com/Luke460/force-feedback-manager/releases), unzip the file and run ***ForceFeedbackManager.exe***.
+
+
+1) Launch the App:
+   - To run ***Force Feedback Manager***, download the [***latest version***](https://github.com/Luke460/force-feedback-manager/releases), unzip the file and run ***ForceFeedbackManager.exe***.
+
+2) Adjust the Sliders:
+   - Use the sliders to adjust the main parameters:
+     - FFB Deadzone: Compensates for deadzones in the force feedback.
+     - Max Output Force: Limits the maximum force output to prevent distortion.
+     - Power Boost: Enhances the sensitivity to finer details in the force feedback.
+
+3) Apply Settings:
+   - After adjusting the sliders, click on the "Apply" button to apply the settings and generate the LUT.
+
+4) View the LUT:
+   - The generated LUT will be displayed in the chart on the left, allowing you to see how the adjustments impact the force feedback behavior.
+   - If you have a comparison LUT, you can load it to see the differences between the two curves.
+
+5) Save the LUT:
+   - Click on the "Save LUT" button to save the generated LUT to a .lut file.
+   - Choose the location and name for the file, and confirm to complete the save process.
+
+6) Use the LUT:
+   - Follow the specific instructions provided in the documentation to use the LUT file in your simulation games, such as "Assetto Corsa" and "Assetto Corsa Competizione".
 
 ### Important Note
 Sometimes, the *ForceFeedbackManager.exe* file may be flagged as a virus by some antivirus software. In such cases, you can:
@@ -51,7 +76,7 @@ Sometimes, the *ForceFeedbackManager.exe* file may be flagged as a virus by some
 
    ``` python src\ForceFeedbackManager.py ```
 
-## Before to start
+### Before to start
 
 In these procedures there is always a remote possibility of damaging your hardware. Only proceed if you are aware of the risk. I take no responsibility for any damage caused by this procedure.
 
