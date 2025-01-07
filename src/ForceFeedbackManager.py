@@ -82,7 +82,7 @@ class ForceFeedbackManagerApp:
     def __init__(self, root):
         """Initialize the application."""
         self.root = root
-        self.version = "v1.1.5"
+        self.version = "v1.1.6"
         self.title_string = "Force Feedback Manager - " + self.version
         self.root.title(self.title_string)
         self.compare_lut = None
