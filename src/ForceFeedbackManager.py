@@ -517,10 +517,6 @@ class ForceFeedbackManagerApp:
             compare_y_vals = [y for x, y in self.compare_lut.points]
             self.ax.plot(compare_x_vals, compare_y_vals, label='Comparison LUT', color='orange', linewidth=2)
         
-        # Add horizontal line for deadzone
-        if deadzone > 0.0:
-            self.ax.axhline(intersection_y, color='dimgrey', linestyle='--', label='Deadzone')
-        
         # Find the maximum y value of the LUT curve
         max_y = max(y_vals)
         
@@ -532,6 +528,10 @@ class ForceFeedbackManagerApp:
         if max_output > 100.0:
             clipping_point = next((x for x, y in lut.points if y >= 1.0), 1.0)
             self.ax.axvline(clipping_point, color='red', linestyle='--', label='Clipping')
+
+        # Add horizontal line for deadzone
+        if deadzone > 0.0:
+            self.ax.axhline(intersection_y, color='dimgrey', linestyle='--', label='Deadzone')
 
         self.ax.set_ylim(0, 1)
         self.ax.set_xlim(0, 1)

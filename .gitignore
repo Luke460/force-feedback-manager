@@ -13,3 +13,7 @@ Thumbs.db
 # Ignore spec file if generated
 ForceFeedbackManager.spec
 
+# Ignore old LUT files
+presets/Develop
+
+
