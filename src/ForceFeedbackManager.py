@@ -82,7 +82,7 @@ class ForceFeedbackManagerApp:
     def __init__(self, root):
         """Initialize the application."""
         self.root = root
-        self.version = "v1.1.6"
+        self.version = "v1.1.7"
         self.title_string = "Force Feedback Manager - " + self.version
         self.root.title(self.title_string)
         self.compare_lut = None
@@ -375,6 +375,7 @@ class ForceFeedbackManagerApp:
         help_popup = tk.Toplevel(self.root)
         help_popup.title("Help - Settings Descriptions")
         help_popup.iconbitmap(get_icon_path())
+        max_text_width = 600
 
         descriptions = {
             "FFB Deadzone": (
@@ -399,11 +400,18 @@ class ForceFeedbackManagerApp:
             frame.pack(fill=tk.X, pady=10)
             setting_label = ttk.Label(frame, text=f"{setting}:", font=('TkDefaultFont', 10, 'bold'))
             setting_label.pack(anchor=tk.W, padx=20, pady=5)
-            description_label = ttk.Label(frame, text=description, wraplength=600, justify=tk.LEFT, font=('TkDefaultFont', 10))
+            description_label = ttk.Label(frame, text=description, wraplength=max_text_width, justify=tk.LEFT, font=('TkDefaultFont', 10))
             description_label.pack(anchor=tk.W, padx=30)
 
-        label = ttk.Label(frame, text="Current app version: " + self.version)
-        label.pack(side=tk.LEFT, padx=20, pady=20)
+        additional_info_frame = ttk.Frame(help_popup)
+        additional_info_frame.pack(fill=tk.X, pady=(10,20))
+    
+        doc_text = "Refer to the documentation to learn how to use the LUT file in your simulator." 
+        doc_label = ttk.Label(additional_info_frame, wraplength=max_text_width, text=doc_text, font=('TkDefaultFont', 10)) 
+        doc_label.pack(anchor=tk.W, padx=20, pady=(5,10))
+
+        version_label = ttk.Label(additional_info_frame, text="Current app version: " + self.version)
+        version_label.pack(anchor=tk.W, padx=20, pady=(5,0))
 
         button_frame = ttk.Frame(help_popup)
         button_frame.pack(pady=(0, 30))
