@@ -35,6 +35,9 @@ Note: Exceeding 100% is not recommended as it will introduce clipping. Instead, 
 ### Power Boost
 This setting is beneficial for less powerful steering wheels to enhance the detail of weaker forces (which contain the most important force feedback information), gradually and progressively sacrificing stronger forces (such as strong impacts, pronounced bumps, which increase immersion but do not contain significant information). Some steering wheels have this setting integrated.
 
+### What is a LUT
+A LUT (Look-Up Table) is a reference table used in various applications and games to map input values of force feedback to customized output values. In other words, it allows the creation of a force feedback response curve that best fits the preferences and the hardware being used. By using a LUT, it is possible to achieve a more precise and realistic steering wheel response, correcting any inherent non-linearities of the device.
+
 ## How To Use
 
 
