@@ -40,6 +40,7 @@ A LUT (Look-Up Table) is a reference table used in various applications and game
 
 
 ## How To Use
+Follow these steps to create your custom LUT file with ***Force Feedback Manager:***
 
 1) Launch the App:
    - To run ***Force Feedback Manager***, download the [***latest version***](https://github.com/Luke460/force-feedback-manager/releases), unzip the file and run ***ForceFeedbackManager.exe***.
