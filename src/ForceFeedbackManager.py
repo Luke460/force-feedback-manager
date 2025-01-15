@@ -82,7 +82,7 @@ class ForceFeedbackManagerApp:
     def __init__(self, root):
         """Initialize the application."""
         self.root = root
-        self.version = "v1.1.7"
+        self.version = "v1.1.8"
         self.title_string = "Force Feedback Manager - " + self.version
         self.root.title(self.title_string)
         self.compare_lut = None
@@ -420,7 +420,7 @@ class ForceFeedbackManagerApp:
         git_button = ttk.Button(button_frame, text="Visit GitHub Page", command=lambda: webbrowser.open(git_link))
         git_button.pack(side=tk.LEFT, padx=5)
 
-        ufb_link = "https://github.com/Luke460/force-feedback-manager/issues/1"
+        ufb_link = "https://github.com/Luke460/force-feedback-manager/discussions/2"
         ufb_button = ttk.Button(button_frame, text="User Feedback", command=lambda: webbrowser.open(ufb_link))
         ufb_button.pack(side=tk.LEFT, padx=5)
 
