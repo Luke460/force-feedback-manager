@@ -6,7 +6,7 @@
 
 Donations are not required, but always accepted with pleasure. Thanks for your support!
  - [***Go to the donation page***](https://www.paypal.com/donate?hosted_button_id=WVSY5VX8TA4ZE)
- - [***User Feedback***](https://github.com/Luke460/force-feedback-manager/issues/1)
+ - [***User Feedback***](https://github.com/Luke460/force-feedback-manager/discussions/2)
 
 ## Other Applications
 
