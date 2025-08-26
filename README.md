@@ -38,6 +38,38 @@ This setting is beneficial for less powerful steering wheels to enhance the deta
 ### LUT File
 A LUT (Look-Up Table) is a reference table used in various applications and games to map input values of force feedback to customized output values. In other words, it allows the creation of a force feedback response curve that best fits the preferences and the hardware being used. By using a LUT, it is possible to achieve a more precise and realistic steering wheel response, correcting any inherent non-linearities of the device.
 
+### Presets
+
+These presets are intended as a starting point and should be fine-tuned to match your personal preferences.
+
+| Brand & Model             | Drive Type        | Max Torque (Nm)      | FFB Deadzone (Estimated)  | Max Output Force | Power Boost |
+|---------------------------|-------------------|----------------------|---------------------------|------------------|-------------|
+| Logitech G29 / G920       | Gear-driven       | ~2.2                 | Moderate (~4–10%)         | 100              | 4.0         |
+| Logitech G923             | Gear-driven       | ~2.3                 | Moderate (~4–10%)         | 100              | 4.0         |
+| Logitech G Pro Racing     | Direct Drive      | ~11                  | Minimal (~0–2%)           | 100              | 0.0         |
+| Thrustmaster T128         | Hybrid Drive      | ~2.5                 | Moderate (~6–12%)         | 100              | 3.5         |
+| Thrustmaster T248         | Hybrid Drive      | ~3.5                 | Moderate (~6–10%)         | 100              | 2.5         |
+| Thrustmaster T300 RS      | Belt-driven       | ~3.9                 | Low (~2–6%)               | 100              | 2.0         |
+| Thrustmaster TX           | Belt-driven       | ~4.4                 | Low (~2–4%)               | 100              | 1.5         |
+| Thrustmaster T-GT II      | Belt-driven       | ~6.0                 | Low (~1–3%)               | 100              | 1.0         |
+| Thrustmaster T598         | Direct Drive      | ~8.0                 | None (~0–1%)              | 100              | 0.5         |
+| Fanatec CSL DD (5Nm)      | Direct Drive      | 5 / 8 (Boost Kit)    | None (~0%)                | 100              | 0.5         |
+| Fanatec DD1               | Direct Drive      | ~20                  | None (~0%)                | 100              | 0.0         |
+| Fanatec DD2               | Direct Drive      | ~25                  | None (~0%)                | 100              | 0.0         |
+| Moza R5                   | Direct Drive      | 5.5                  | None (~0%)                | 100              | 0.5         |
+| Moza R9                   | Direct Drive      | 9                    | None (~0%)                | 100              | 0.0         |
+| Simucube 2 Sport          | Direct Drive      | ~17                  | None (~0%)                | 100              | 0.0         |
+| Simucube 2 Pro            | Direct Drive      | ~25                  | None (~0%)                | 100              | 0.0         |
+
+Suggested Power Boost general rule:
+
+| Max Torque (Nm)	| Suggested Power Boost |
+|-----------------|-----------------------|
+| < 3 Nm	         | 4.0                   |
+| < 4 Nm	         | 3.0                   |
+| < 5 Nm	         | 2.0                   |
+| < 8 Nm	         | 1.0                   |
+| ≥ 10 Nm         |	Not needed            |
 
 ## How To Use
 Follow these steps to create your custom LUT file with ***Force Feedback Manager:***
@@ -46,7 +78,7 @@ Follow these steps to create your custom LUT file with ***Force Feedback Manager
    - To run ***Force Feedback Manager***, download the [***latest version***](https://github.com/Luke460/force-feedback-manager/releases), unzip the file and run ***ForceFeedbackManager.exe***.
 
 2) Adjust the Sliders:
-   - Use the sliders to adjust the main parameters:
+   - Use the sliders to adjust the main parameters (refer to the "Presets" section below):
      - FFB Deadzone: Compensates for deadzones in the force feedback.
      - Max Output Force: Limits the maximum force output to prevent distortion.
      - Power Boost: Enhances the sensitivity to finer details in the force feedback.
