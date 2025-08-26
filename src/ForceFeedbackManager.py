@@ -3,6 +3,7 @@ import json
 import os
 import sys
 import webbrowser
+import requests
 import tkinter as tk
 
 from tkinter import filedialog
@@ -82,7 +83,7 @@ class ForceFeedbackManagerApp:
     def __init__(self, root):
         """Initialize the application."""
         self.root = root
-        self.version = "v1.1.8"
+        self.version = "v1.1.9"
         self.title_string = "Force Feedback Manager - " + self.version
         self.root.title(self.title_string)
         self.compare_lut = None
@@ -108,6 +109,8 @@ class ForceFeedbackManagerApp:
         # Main label
         self.main_title_label = ttk.Label(mainframe, text="Force Feedback Manager", font=('Helvetica', 20, 'bold italic'))
         self.main_title_label.grid(row=row, column=0, columnspan=3, pady=5)
+        update_check_button = ttk.Button(mainframe, text="Check Updates", command=self.check_version)
+        update_check_button.grid(row=row, column=0, sticky=tk.W, padx=5)
         donate_button = self.create_donation_button(mainframe, self.show_donation_popup)
         donate_button.grid(row=row, column=2, sticky=tk.E, padx=5)
         row += 1
@@ -215,6 +218,49 @@ class ForceFeedbackManagerApp:
         # Some logs
         print(f"Windows scaling factor: {scaling_factor * 100:.0f}%")
         print("Window resolution: " + str(mainframe_width) + " x " + str(mainframe_height))
+
+        # Update check
+        self.root.after(1000, lambda: self.check_version(show_up_to_date=False))
+
+    def check_version(self, show_up_to_date=True):
+        latest = self.get_latest_release()
+        message = None
+        new_version = False
+        if latest is None:
+            message = "Unable to check the latest version"
+        elif latest != self.version:
+            message = f"⚠️ A new update is available: {latest}"
+            new_version = True
+        elif show_up_to_date:
+            message = "✅ Force Feedback Manager is up to date."
+        if message:
+            print(message)
+            self.show_update_popup(message, new_version)
+
+    def get_latest_release(self):
+        url = "https://api.github.com/repos/Luke460/force-feedback-manager/releases/latest"
+        response = requests.get(url)
+        if response.status_code == 200:
+            data = response.json()
+            return data['tag_name']
+        return None
+
+    def show_update_popup(self, message, new_version):
+        popup = tk.Toplevel(self.root)
+        popup.title("Update Check")
+        popup.iconbitmap(get_icon_path())
+
+        label = ttk.Label(popup, text=message, font=('TkDefaultFont', 11))
+        label.pack(pady=20, padx=20)
+
+        if new_version:
+            link = "https://github.com/Luke460/force-feedback-manager/releases/latest";
+            button_frame = ttk.Frame(popup)
+            button_frame.pack(pady=(0,20), padx=10)
+            update_button = ttk.Button(button_frame, text="Update", command=lambda: open_link(link))
+            update_button.pack(side=tk.LEFT, padx=5)
+
+        self.center_popup(popup)
 
     def create_donation_button(self, mainframe, command):
         """Create a frame for the donation button in the top right corner."""
@@ -505,6 +551,10 @@ class ForceFeedbackManagerApp:
     def update_chart(self, compare_lut=None):
         """Update the chart with the current settings, optionally comparing with another LUT."""
         self.ax.clear()
+
+        # Add default lut line
+        self.ax.plot([0, 100], [0, 100], color='gray', linewidth=0.5, dashes=(2, 2))
+
         lut_size = 100
         deadzone = self.deadzone_value.get()
         max_output = self.max_output_value.get()
