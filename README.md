@@ -38,6 +38,11 @@ This setting is beneficial for less powerful steering wheels to enhance the deta
 ### LUT File
 A LUT (Look-Up Table) is a reference table used in various applications and games to map input values of force feedback to customized output values. In other words, it allows the creation of a force feedback response curve that best fits the preferences and the hardware being used. By using a LUT, it is possible to achieve a more precise and realistic steering wheel response, correcting any inherent non-linearities of the device.
 
+### Automatic Integration for Assetto Corsa and Assetto Corsa Competizione
+A new option allows automatic creation and updating of the ff_post_process.ini file required by Assetto Corsa and Assetto Corsa Competizione.
+When applying the LUT, the system generates the .ini file and automatically creates a backup if one doesn't already exist, ensuring previous configurations are safely preserved.
+Note: If you're using Content Manager with Assetto Corsa, the LUT must be imported directly through Content Manager to be properly recognized in-game.
+
 ### Presets
 
 These presets are intended as a starting point and should be fine-tuned to match your personal preferences.
