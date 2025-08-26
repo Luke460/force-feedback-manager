@@ -44,7 +44,6 @@ When applying the LUT, the system generates the .ini file and automatically crea
 Note: If you're using Content Manager with Assetto Corsa, the LUT must be imported directly through Content Manager to be properly recognized in-game.
 
 ### Presets
-
 These presets are intended as a starting point and should be fine-tuned to match your personal preferences.
 
 | Brand & Model             | Drive Type        | Max Torque (Nm)      | FFB Deadzone (Estimated)  | Max Output Force | Power Boost |
@@ -102,7 +101,7 @@ Follow these steps to create your custom LUT file with ***Force Feedback Manager
 6) Use the LUT:
    - Follow the specific instructions provided in the documentation to use the LUT file in your simulation games, such as "Assetto Corsa" and "Assetto Corsa Competizione".
 
-### Important Note
+### ⚠️ Important Note
 Sometimes, the *ForceFeedbackManager.exe* file may be flagged as a virus by some antivirus software. In such cases, you can:
 
  - Add an exception in your antivirus software;
@@ -117,32 +116,31 @@ Sometimes, the *ForceFeedbackManager.exe* file may be flagged as a virus by some
 
    ``` python src\ForceFeedbackManager.py ```
 
-### Before to start
+### ⚠️ Before to start
 
 In these procedures there is always a remote possibility of damaging your hardware. Only proceed if you are aware of the risk. I take no responsibility for any damage caused by this procedure.
 
-## How to use LUT files in *Assetto Corsa* and *Assetto Corsa Competizione*
+## How to Use LUT Files in *Assetto Corsa* and *Assetto Corsa Competizione*
 
-To allow *AC* and *ACC* to use your lut file, you need to create a text file named *ff_post_process.ini*
+From version **1.2.0**, you no longer need to manually create the `ff_post_process.ini` file.
+By enabling the option **“Create and update ff_post_process.ini file for Assetto Corsa and Assetto Corsa Competizione”**, the app will automatically generate and update the required configuration file whenever a LUT is applied.
 
-Here is an example:
-```
-[HEADER]
-VERSION=1
-TYPE=LUT
-ENABLED=1
+### File Placement
 
-[GAMMA]
-VALUE=1
+Make sure both the `.lut` file and the automatically generated `.ini` file are placed in the correct folders:
 
-[LUT]
-CURVE=NAME-OF-YOUR-LUT-FILE.lut
-```
-**NOTE:** You need to set the ***CURVE*** variable with the name of ***your*** LUT file.
+- **Assetto Corsa**  
+  `C:\Users\<user_name>\Documents\Assetto Corsa\cfg`
 
-Now just place both the .lut file and the .ini file in the following folder:
- - For AC: ```C:\Users\<user_name>\Documents\Assetto Corsa\cfg```
- - For ACC: ```C:\Users\<user_name>\Documents\Assetto Corsa Competizione\Config```
+- **Assetto Corsa Competizione**  
+  `C:\Users\<user_name>\Documents\Assetto Corsa Competizione\Config`
+
+In *Assetto Corsa Competizione* the updated LUT is automatically reloaded when you open the **Controls** menu in-game, so no restart is required.
+
+### ⚠️ Note for Content Manager Users (AC only)
+
+If you're using **Content Manager** with Assetto Corsa, the LUT must be imported directly through its interface.  
+Manual placement of the `.ini` file may be ignored by the game if not handled via Content Manager.
 
 ## How to use LUT files in *Assetto Corsa* with Content Manager
 
