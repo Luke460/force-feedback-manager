@@ -5,6 +5,7 @@ import sys
 import webbrowser
 import requests
 import tkinter as tk
+import shutil
 
 from tkinter import filedialog
 from tkinter import ttk
@@ -79,22 +80,30 @@ def limit_value(value, min, max):
 
 
 class ForceFeedbackManagerApp:
+    SETTING_FILE = "AppSettings.json"
 
     def __init__(self, root):
         """Initialize the application."""
         self.root = root
-        self.version = "v1.1.9"
+        self.version = "v1.2.0"
         self.title_string = "Force Feedback Manager - " + self.version
         self.root.title(self.title_string)
         self.compare_lut = None
         self.compare_lut_modified = False
-        self.loaded_preset_name = None
-        self.saved_lut_name = None
+        self.preset_path = None
+        self.preset_name = None
+        self.lut_path = None
+        self.lut_name = None
         self.compare_lut_name = None
+        self.initial_deadzone_value = 0.0
+        self.initial_max_output_value = 100.0
+        self.initial_power_boost_value = 0.0
+        self.initial_create_AC_file = True
 
         print(self.title_string)
 
         self.load_donation_image()
+        self.read_app_settings()
         
         # Create main frame
         lateral_padding = 30
@@ -121,9 +130,10 @@ class ForceFeedbackManagerApp:
         row += 1
 
         # Initialize variables for sliders
-        self.deadzone_value = tk.DoubleVar()
-        self.max_output_value = tk.DoubleVar(value=100.0)
-        self.power_boost_value = tk.DoubleVar(value=0.0)
+        self.deadzone_value = tk.DoubleVar(value=self.initial_deadzone_value)
+        self.max_output_value = tk.DoubleVar(value=self.initial_max_output_value)
+        self.power_boost_value = tk.DoubleVar(value=self.initial_power_boost_value)
+        self.create_ac_file = tk.BooleanVar(value=self.initial_create_AC_file)
 
         # Initialize limiters for values
         self.deadzone_min = 0.0
@@ -183,9 +193,18 @@ class ForceFeedbackManagerApp:
         self.scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.combined_output.config(yscrollcommand=self.scrollbar.set)
 
+        # Create checkbox for ff_post_process file
+        create_ac_checkbox = ttk.Checkbutton(
+            mainframe,
+            text='Create and update "ff_post_process.ini" file for "Assetto Corsa" and "Assetto Corsa Competizione"',
+            variable=self.create_ac_file
+        )
+        create_ac_checkbox.grid(row=row, column=0, columnspan=3, pady=(25,15))
+        row += 1
+
         # Frame to hold the buttons
         final_button_frame = ttk.Frame(mainframe)
-        final_button_frame.grid(row=row, column=0, columnspan=3, pady=20)
+        final_button_frame.grid(row=row, column=0, columnspan=3, pady=15)
 
         # Compare button
         compare_button = ttk.Button(final_button_frame, text="Compare LUT", command=self.load_compare_lut)
@@ -221,6 +240,41 @@ class ForceFeedbackManagerApp:
 
         # Update check
         self.root.after(1000, lambda: self.check_version(show_up_to_date=False))
+
+    def read_app_settings(self):
+        if not os.path.exists(self.SETTING_FILE):
+            print("Settings file not found. Using defaults.")
+            return
+
+        try:
+            with open(self.SETTING_FILE, 'r') as f:
+                settings = json.load(f)
+                self.initial_deadzone_value = settings.get("deadzone")
+                self.initial_max_output_value = settings.get("max_output")
+                self.initial_power_boost_value = settings.get("power_boost")
+                self.create_ac_file = settings.get("create_ac_file")
+                self.lut_path = settings.get("last_lut_path")
+                self.lut_name = settings.get("last_lut_name")
+                print("App settings loaded.")
+        except Exception as e:
+            print(f"Error reading settings file: {e}")
+
+    def update_app_settings(self):
+        settings = {
+            "deadzone": self.deadzone_value.get(),
+            "max_output": self.max_output_value.get(),
+            "power_boost": self.power_boost_value.get(),
+            "create_ac_file": self.create_ac_file.get(),
+            "last_lut_path": self.lut_path,
+            "last_lut_name": self.lut_name
+        }
+
+        try:
+            with open(self.SETTING_FILE, 'w') as f:
+                json.dump(settings, f, indent=4)
+                print("Settings successfully saved.")
+        except Exception as e:
+            print(f"Error writing settings file: {e}")
 
     def check_version(self, show_up_to_date=True):
         latest = self.get_latest_release()
@@ -304,11 +358,11 @@ class ForceFeedbackManagerApp:
     def update_status_label(self):
         """Update the status label with loaded preset, saved LUT, and compare LUT names."""
         status_parts = []
-        if self.loaded_preset_name:
+        if self.preset_name:
             modified_text = " (modified)" if self.is_preset_modified() else ""
-            status_parts.append(f"Preset loaded: {self.loaded_preset_name}{modified_text}")
-        if self.saved_lut_name:
-            status_parts.append(f"LUT saved: {self.saved_lut_name}")
+            status_parts.append(f"Preset loaded: {self.preset_name}{modified_text}")
+        if self.lut_name:
+            status_parts.append(f"LUT saved: {self.lut_name}")
         if self.compare_lut_name:
             status_parts.append(f"Comparison LUT loaded: {self.compare_lut_name}")
         status_text = " | ".join(status_parts) if status_parts else "Adjust FFB Deadzone, Max Output Force, and Power Boost, then click Apply."
@@ -381,24 +435,29 @@ class ForceFeedbackManagerApp:
         if file_path:
             with open(file_path, "w") as file:
                 json.dump(preset, file)
-            self.saved_lut_name = os.path.basename(file_path)
+            self.preset_path = file_path
+            self.preset_name = os.path.basename(file_path)
             self.update_status_label()
 
     def load_preset(self):
         """Load slider values from a preset file."""
         file_path = filedialog.askopenfilename(initialdir="./presets", filetypes=[("JSON files", "*.json"), ("All files", "*.*")])
         if file_path:
-            with open(file_path, "r") as file:
-                preset = json.load(file)
-                self.deadzone_value.set(preset["deadzone"])
-                self.max_output_value.set(preset["max_output"])
-                self.power_boost_value.set(preset["power_boost"])
+            self.load_preset_file(file_path)
+
+    def load_preset_file(self, file_path):
+        with open(file_path, "r") as file:
+            preset = json.load(file)
+            self.deadzone_value.set(preset["deadzone"])
+            self.max_output_value.set(preset["max_output"])
+            self.power_boost_value.set(preset["power_boost"])
                 # Save initial values
-                self.initial_deadzone_value = preset["deadzone"]
-                self.initial_max_output_value = preset["max_output"]
-                self.initial_power_boost_value = preset["power_boost"]
-            self.loaded_preset_name = os.path.basename(file_path)
-            self.apply_correction()
+            self.initial_deadzone_value = preset["deadzone"]
+            self.initial_max_output_value = preset["max_output"]
+            self.initial_power_boost_value = preset["power_boost"]
+        self.preset_path = file_path
+        self.preset_name = os.path.basename(file_path)
+        self.apply_correction()
 
     def center_popup(self, popup):
         """Center the given popup window on the root window."""
@@ -621,17 +680,51 @@ class ForceFeedbackManagerApp:
         lut_content = ["0.000|0.00000"]  # First value
         lut_content += [f"{x:.3f}|{y:.5f}" for x, y in self.lut.points if x != 0.000]
 
-        file_path = filedialog.asksaveasfilename(defaultextension=".lut", filetypes=[("LUT files", "*.lut"), ("All files", "*.*")])
+        file_path = filedialog.asksaveasfilename(initialdir=self.lut_path, initialfile=self.lut_name, defaultextension=".lut", filetypes=[("LUT files", "*.lut"), ("All files", "*.*")])
         if file_path:
             with open(file_path, "w") as file:
                 file.write("\n".join(lut_content))
-            self.saved_lut_name = os.path.basename(file_path)
+            self.lut_path = os.path.dirname(file_path)
+            self.lut_name = os.path.basename(file_path)
+            self.update_ff_post_process_ini()
             self.update_status_label()
             self.show_donation_popup()
+            self.update_app_settings()
+
+    def update_ff_post_process_ini(self):
+        ini_content = f"""[HEADER]
+VERSION=1
+TYPE=LUT
+ENABLED=1
+
+[GAMMA]
+VALUE=1
+
+[LUT]
+CURVE={self.lut_name}
+"""
+
+        ini_path = os.path.join(self.lut_path, "ff_post_process.ini")
+        backup_path = os.path.join(self.lut_path, "ff_post_process_backup.ini")
+
+        # create a backup file
+        if not os.path.exists(backup_path) and os.path.exists(ini_path):
+            try:
+                shutil.copyfile(ini_path, backup_path)
+                print(f"Backup created at: {backup_path}")
+            except Exception as e:
+                print(f"Error creating backup: {e}")
+        else:
+            print("Backup already exists. No action taken.")
+
+        # update the .ini file
+        with open(ini_path, "w") as f:
+            f.write(ini_content)
+        print(f"INI file created at: {ini_path}")
 
     def load_compare_lut(self):
         """Load and display a LUT file for comparison."""
-        file_path = filedialog.askopenfilename(defaultextension=".lut", filetypes=[("LUT files", "*.lut"), ("All files", "*.*")])
+        file_path = filedialog.askopenfilename(initialdir=self.lut_path, initialfile=self.lut_name, defaultextension=".lut", filetypes=[("LUT files", "*.lut"), ("All files", "*.*")])
         if file_path:
             self.compare_lut = Lut()
             with open(file_path, "r") as file:
@@ -644,7 +737,7 @@ class ForceFeedbackManagerApp:
 
     def is_preset_modified(self):
         """Check if the current preset values have been modified."""
-        return (self.loaded_preset_name and (
+        return (self.preset_name and (
             self.deadzone_value.get() != self.initial_deadzone_value or
             self.max_output_value.get() != self.initial_max_output_value or
             self.power_boost_value.get() != self.initial_power_boost_value))
