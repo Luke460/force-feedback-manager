@@ -28,7 +28,7 @@ This setting compensates and removes the force feedback deadzone of some steerin
 Tip: If set too high, vibrations may occur; reduce until they disappear. Increase until there's no more 'dead' feeling on straights.
 
 ### Max Output Force
-This setting limits the maximum power in case the steering wheel has difficulty accurately reproducing force feedback near its power limit. In most cases, it can be set to the default value of 100%. Many games/simulators have this setting. If you want to use this setting, keep the game's default value (usually 100%).
+This setting limits the maximum power in case the steering wheel has difficulty accurately reproducing forces near its power limit. In most cases, it can be set to the default value of 100%. Many games/simulators have this setting. If you want to use this setting, keep the game's default value (usually 100%).
 
 Note: Exceeding 100% is not recommended as it will introduce clipping. Instead, use the Power Boost setting.
 
@@ -57,13 +57,15 @@ These presets are intended as a starting point and should be fine-tuned to match
 | Thrustmaster TX           | Belt-driven       | ~4.4                 | Low (~2–4%)               | 100              | 1.5         |
 | Thrustmaster T-GT II      | Belt-driven       | ~6.0                 | Low (~1–3%)               | 100              | 1.0         |
 | Thrustmaster T598         | Direct Drive      | ~8.0                 | None (~0–1%)              | 100              | 0.5         |
-| Fanatec CSL DD (5Nm)      | Direct Drive      | 5 / 8 (Boost Kit)    | None (~0%)                | 100              | 0.5         |
+| Fanatec CSL DD (5Nm)      | Direct Drive      | ~5 / ~8 (Boost Kit)  | None (~0%)                | 100              | 0.5         |
 | Fanatec DD1               | Direct Drive      | ~20                  | None (~0%)                | 100              | 0.0         |
 | Fanatec DD2               | Direct Drive      | ~25                  | None (~0%)                | 100              | 0.0         |
-| Moza R5                   | Direct Drive      | 5.5                  | None (~0%)                | 100              | 0.5         |
-| Moza R9                   | Direct Drive      | 9                    | None (~0%)                | 100              | 0.0         |
+| Moza R5                   | Direct Drive      | ~5.5                 | None (~0%)                | 100              | 0.5         |
+| Moza R9                   | Direct Drive      | ~9                   | None (~0%)                | 100              | 0.0         |
 | Simucube 2 Sport          | Direct Drive      | ~17                  | None (~0%)                | 100              | 0.0         |
 | Simucube 2 Pro            | Direct Drive      | ~25                  | None (~0%)                | 100              | 0.0         |
+| Cammus C5                 | Direct Drive      | ~5                   | None (~0–1%)              | 100              | 1.0         |
+| Cammus C12                | Direct Drive      | ~12                  | None (~0–1%)              | 100              | 0.0         |
 
 Suggested Power Boost general rule:
 
@@ -102,17 +104,17 @@ Follow these steps to create your custom LUT file with ***Force Feedback Manager
    - Follow the specific instructions provided in the documentation to use the LUT file in your simulation games, such as "Assetto Corsa" and "Assetto Corsa Competizione".
 
 ### ⚠️ Important Note
-Sometimes, the *ForceFeedbackManager.exe* file may be flagged as a virus by some antivirus software. In such cases, you can:
+Sometimes, the *ForceFeedbackManager.exe* file may be flagged as a virus by some antivirus software. In such cases, you have 3 options:
 
- - Add an exception in your antivirus software;
+ 1) Add an exception in your antivirus software;
 
- - Build the executable file yourself:
+ 2) Build the executable file yourself:
    - clone the repository
    - from *force-feedback-manager* folder run: 
 
      ``` pyinstaller --clean --onefile --windowed --version-file=version.txt src\ForceFeedbackManager.py ```
 
- - Directly run the Python code from the command line, ensuring you have installed Python and the necessary libraries (as indicated by the imports at the top of the file). So, from *force-feedback-manager* folder run: 
+ 3) Directly run the Python code from the command line, ensuring you have installed Python and the necessary libraries (as indicated by the imports at the top of the file). So, from *force-feedback-manager* folder run: 
 
    ``` python src\ForceFeedbackManager.py ```
 
@@ -139,7 +141,7 @@ In *Assetto Corsa Competizione* the updated LUT is automatically reloaded when y
 
 ### ⚠️ Note for Content Manager Users (AC only)
 
-If you're using **Content Manager** with Assetto Corsa, the LUT must be imported directly through its interface.  
+If you're using **Content Manager** with Assetto Corsa, it's recommended to import the LUT directly through its interface.
 Manual placement of the `.ini` file may be ignored by the game if not handled via Content Manager.
 
 ## How to use LUT files in *Assetto Corsa* with Content Manager
