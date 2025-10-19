@@ -15,9 +15,11 @@ Donations are not required, but always accepted with pleasure. Thanks for your s
 ---
 
 # Force Feedback Manager
-***Force Feedback Manager*** is designed to enhance and customize your driving simulation experience by optimizing force feedback settings, compensating for deadzones, and improving steering wheel performance. It offers an intuitive interface and essential features for driving enthusiasts. 
+***Force Feedback Manager*** is designed to enhance and customize your driving simulation experience by optimizing force feedback settings, compensating for deadzones, and improving steering wheel performance. It offers an intuitive interface and essential features for driving enthusiasts.
 
 The development was born to help the simracers community get the most out of their steering wheels, regardless of the price range of the hardware. While [***Steering Wheel Master***](https://github.com/Luke460/steering-wheel-master) (my previous application) was created with the same goal in mind, ***Force Feedback Manager*** aims to make the process even more straightforward and user-friendly. For more advanced features like calibration, please refer to ***Steering Wheel Master***.
+
+***Force Feedback Manager*** is currently supported in ***Assetto Corsa*** and ***Assetto Corsa Competizione***.
 
 ![example](images/ffm-example-image.png)
 
