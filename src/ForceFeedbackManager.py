@@ -85,7 +85,7 @@ class ForceFeedbackManagerApp:
     def __init__(self, root):
         """Initialize the application."""
         self.root = root
-        self.version = "v1.2.0"
+        self.version = "v1.2.1"
         self.title_string = "Force Feedback Manager - " + self.version
         self.root.title(self.title_string)
         self.compare_lut = None
@@ -140,7 +140,7 @@ class ForceFeedbackManagerApp:
         self.deadzone_max = 30.0
         self.max_output_min = 50.0
         self.max_output_max = 150.0
-        self.power_boost_min = 0.0
+        self.power_boost_min = -5.0
         self.power_boost_max = 10.0
         
         # Create sliders for FFB Deadzone, Max Output Force, and Power Boost
@@ -494,9 +494,11 @@ class ForceFeedbackManagerApp:
                 "Exceeding 100% is not recommended as it will introduce clipping. Instead, use the Power Boost setting."
             ),
             "Power Boost": (
-                "This setting is beneficial for less powerful steering wheels to enhance the detail of weaker forces (which contain the most important force feedback information), "
-                "gradually and progressively sacrificing stronger forces (such as strong impacts, pronounced bumps, which increase immersion but do not contain significant information). "
-                "Some steering wheels have this setting integrated."
+                "This setting is designed for less powerful steering wheels and works similarly to an audio compressor: "
+                "it boosts weaker forces (which carry the most important force-feedback information) while gradually reducing "
+                "the intensity of stronger forces such as heavy impacts or pronounced bumps, which enhance immersion but do not "
+                "add meaningful information. Some steering wheels already include a similar feature internally; "
+                "in those cases, you can use negative values to compensate if needed."
             )
         }
                 
